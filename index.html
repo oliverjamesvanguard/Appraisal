@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Appraisal">
+<title>Appraisal – Oliver Robinson</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --ink: #1a1a1a;
+        --rule: #2a2a2a;
+        --pale: #f5f3ee;
+        --cream: #fffdf7;
+        --gold: #b8960c;
+    }
+
+    body {
+        font-family: 'Source Sans 3', Arial, sans-serif;
+        background: var(--pale);
+        color: var(--ink);
+        padding: 24px 16px 80px;
+        min-height: 100vh;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    .page {
+        max-width: 720px;
+        margin: 0 auto;
+        background: var(--cream);
+        border: 2px solid var(--rule);
+        padding: 32px 24px 48px;
+        box-shadow: 6px 6px 0 #ccc8be;
+        border-radius: 4px;
+    }
+
+    /* ── Header ── */
+    header {
+        text-align: center;
+        border-bottom: 3px double var(--rule);
+        padding-bottom: 20px;
+        margin-bottom: 24px;
+    }
+    header h1 {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: clamp(44px, 12vw, 80px);
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        line-height: 1;
+    }
+    header p {
+        font-size: clamp(13px, 3.5vw, 17px);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #555;
+        margin-top: 6px;
+    }
+
+    /* ── Section titles ── */
+    h2.section-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        border-bottom: 1.5px solid var(--rule);
+        padding-bottom: 6px;
+        margin: 28px 0 16px;
+    }
+
+    /* ── Items table ── */
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: clamp(14px, 3.5vw, 16px);
+    }
+    .items-table th {
+        background: var(--ink);
+        color: #fff;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 11px;
+        padding: 10px 8px;
+        text-align: left;
+    }
+    .items-table td {
+        border-bottom: 1px solid #d0ccc4;
+        padding: 6px 4px;
+        vertical-align: middle;
+    }
+    .items-table tr:nth-child(even) td { background: #f9f7f2; }
+
+    /* ── Inputs ── */
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        font-family: 'Source Sans 3', Arial, sans-serif;
+        font-size: inherit;
+        color: var(--ink);
+        background: transparent;
+        border: none;
+        border-bottom: 1.5px dashed #aaa;
+        width: 100%;
+        padding: 6px 2px;
+        outline: none;
+        -webkit-appearance: none;
+        border-radius: 0;
+    }
+    input[type="number"] { text-align: right; }
+    input:focus, textarea:focus { border-bottom-color: var(--gold); background: #fffbe8; }
+    input[readonly] {
+        border-bottom-style: solid;
+        border-bottom-color: #bbb;
+        color: #333;
+        font-weight: 600;
+        background: transparent !important;
+    }
+
+    /* ── Col widths ── */
+    .col-desc  { width: 52%; }
+    .col-unit  { width: 24%; }
+    .col-total { width: 24%; }
+
+    /* ── Buttons ── */
+    .add-row-btn {
+        display: block;
+        margin: 10px 0 0;
+        background: none;
+        border: 1.5px dashed #aaa;
+        color: #777;
+        font-size: 14px;
+        letter-spacing: 0.06em;
+        padding: 8px 16px;
+        cursor: pointer;
+        border-radius: 3px;
+        font-family: inherit;
+        -webkit-appearance: none;
+    }
+    .add-row-btn:active { border-color: var(--gold); color: var(--gold); }
+
+    /* ── Delete row ── */
+    .del-btn {
+        background: none;
+        border: none;
+        color: #bbb;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 0 4px;
+        line-height: 1;
+        font-family: inherit;
+    }
+    .del-btn:active { color: #c00; }
+
+    /* ── Totals ── */
+    .totals-block {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+    }
+    .totals-block .row {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        font-size: clamp(14px, 4vw, 17px);
+    }
+    .totals-block .row label { color: #555; letter-spacing: 0.05em; white-space: nowrap; }
+    .totals-block .row input { width: 130px; font-size: inherit; font-weight: 600; }
+
+    .original-box {
+        border: 2px dashed #999;
+        border-radius: 6px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        font-size: clamp(16px, 5vw, 22px);
+        font-weight: 700;
+        margin-top: 6px;
+        background: #f7f5ef;
+    }
+    .original-box input { width: 150px; font-size: inherit; font-weight: 700; }
+
+    /* ── Discounts ── */
+    .disc-table { width: 100%; border-collapse: collapse; font-size: clamp(14px, 3.5vw, 16px); }
+    .disc-table td { padding: 6px 4px; border-bottom: 1px solid #e0ddd6; vertical-align: middle; }
+    .disc-table .disc-desc { width: 55%; }
+    .disc-table .disc-amt  { width: 35%; text-align: right; }
+    .disc-table .disc-del  { width: 10%; text-align: center; }
+    .disc-table .disc-amt input { width: 110px; font-weight: 600; }
+
+    /* ── Final price ── */
+    .final-price-box {
+        margin: 28px 0 0;
+        border: 3px solid var(--ink);
+        border-radius: 8px;
+        background: #fffbe8;
+        padding: 20px 16px;
+        text-align: center;
+        box-shadow: 4px 4px 0 #ccc8be;
+    }
+    .final-price-box .label {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: clamp(16px, 5vw, 24px);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #555;
+        margin-bottom: 8px;
+    }
+    .final-price-box input {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: clamp(32px, 10vw, 60px);
+        font-weight: 900;
+        text-align: center;
+        border: none;
+        border-bottom: 3px solid var(--ink);
+        width: 100%;
+        background: transparent;
+        color: var(--ink);
+        letter-spacing: 0.04em;
+        -webkit-appearance: none;
+    }
+
+    /* ── Approved / payment ── */
+    .approved-row, .payment-section { margin-top: 28px; }
+    .approved-row label, .payment-section label {
+        display: block;
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #666;
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+    .approved-row input { font-size: 20px; font-weight: 600; width: 100%; max-width: 320px; }
+    .payment-section textarea {
+        font-size: 15px;
+        width: 100%;
+        resize: vertical;
+        border: 1.5px dashed #aaa;
+        padding: 10px;
+        border-radius: 4px;
+        background: transparent;
+    }
+
+    /* ── Sig line ── */
+    .sig-line {
+        margin-top: 48px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px;
+        border-top: 1.5px solid #ccc;
+        padding-top: 20px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        color: #555;
+        text-transform: uppercase;
+    }
+    .sig-line .sig-field { flex: 1 1 160px; }
+    .sig-line .sig-field span { display: block; border-bottom: 1.5px solid #aaa; margin-top: 32px; }
+
+    /* ── Reset button ── */
+    .reset-btn {
+        display: block;
+        margin: 32px auto 0;
+        background: #fff;
+        color: #c00;
+        border: 2px solid #c00;
+        font-family: inherit;
+        font-size: 14px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 10px 28px;
+        border-radius: 4px;
+        cursor: pointer;
+        -webkit-appearance: none;
+    }
+    .reset-btn:active { background: #c00; color: #fff; }
+
+    /* ── Print ── */
+    .print-btn {
+        display: block;
+        margin: 16px auto 0;
+        background: var(--ink);
+        color: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 12px 32px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        -webkit-appearance: none;
+    }
+    .print-btn:active { background: #333; }
+
+    @media print {
+        body { background: #fff; padding: 0; }
+        .page { border: none; box-shadow: none; padding: 20px; }
+        .add-row-btn, .print-btn, .reset-btn, .del-btn { display: none; }
+        input, textarea { border-bottom-style: solid !important; border-bottom-color: #ccc !important; }
+    }
+</style>
+</head>
+<body>
+<div class="page">
+
+    <header>
+        <h1>APPRAISAL</h1>
+        <p>Chartered Surveyor &nbsp;·&nbsp; Oliver Robinson</p>
+    </header>
+
+    <h2 class="section-title">Itemised Costs</h2>
+    <table class="items-table" id="itemsTable">
+        <thead>
+            <tr>
+                <th class="col-desc">Description</th>
+                <th class="col-unit">Unit Price (£)</th>
+                <th class="col-total">Total (£)</th>
+                <th style="width:8%"></th>
+            </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+    </table>
+    <button class="add-row-btn" onclick="addRow()">+ Add line item</button>
+
+    <div class="totals-block">
+        <div class="row">
+            <label>Subtotal</label>
+            <span>£</span>
+            <input id="subtotal" type="text" readonly>
+        </div>
+        <div class="row">
+            <label>VAT (£)</label>
+            <span>£</span>
+            <input id="vat" type="number" min="0" step="0.01" placeholder="0.00" oninput="calculateTotals()">
+        </div>
+        <div class="original-box">
+            <span style="white-space:nowrap;font-weight:700">Original Total &nbsp;£</span>
+            <input id="originalTotal" type="text" readonly>
+        </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top:36px">Surveyor Approved Discounts</h2>
+    <table class="disc-table">
+        <tbody id="discBody"></tbody>
+    </table>
+    <button class="add-row-btn" onclick="addDiscount()">+ Add discount</button>
+
+    <div class="final-price-box">
+        <div class="label">Final Price</div>
+        <input id="finalPrice" type="text" readonly>
+    </div>
+
+    <div class="approved-row">
+        <label>Approved by</label>
+        <input type="text" placeholder="Oliver Robinson">
+    </div>
+
+    <div class="payment-section">
+        <label>Payment Terms</label>
+        <textarea rows="4" placeholder="Enter payment terms…"></textarea>
+    </div>
+
+    <div class="sig-line">
+        <div class="sig-field">Customer Signature<span>&nbsp;</span></div>
+        <div class="sig-field">Date<span>&nbsp;</span></div>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="reset-btn" onclick="resetForm()">↺ Clear Form</button>
+
+</div>
+
+<script>
+function fmt(n) { return (isNaN(n) ? 0 : Math.max(0, n)).toFixed(2); }
+
+function addRow() {
+    const tbody = document.getElementById('itemsBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td class="col-desc"><input type="text" placeholder="Description"></td>
+        <td class="col-unit"><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcRow(this)"></td>
+        <td class="col-total"><input type="text" readonly placeholder="0.00"></td>
+        <td><button class="del-btn" onclick="delRow(this)">×</button></td>`;
+    tbody.appendChild(tr);
+}
+
+function delRow(btn) {
+    btn.closest('tr').remove();
+    calculateTotals();
+}
+
+function calcRow(el) {
+    const row = el.closest('tr');
+    const unit = parseFloat(el.value) || 0;
+    row.cells[2].querySelector('input').value = fmt(unit);
+    calculateTotals();
+}
+
+function addDiscount() {
+    const tbody = document.getElementById('discBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td class="disc-desc"><input type="text" placeholder="Discount description"></td>
+        <td class="disc-amt">– £<input type="number" min="0" step="0.01" placeholder="0.00" oninput="calculateFinal()"></td>
+        <td class="disc-del"><button class="del-btn" onclick="delDisc(this)">×</button></td>`;
+    tbody.appendChild(tr);
+}
+
+function delDisc(btn) {
+    btn.closest('tr').remove();
+    calculateFinal();
+}
+
+function calculateTotals() {
+    let sub = 0;
+    document.querySelectorAll('#itemsBody .col-total input').forEach(i => {
+        sub += parseFloat(i.value) || 0;
+    });
+    document.getElementById('subtotal').value = fmt(sub);
+    const vat = parseFloat(document.getElementById('vat').value) || 0;
+    document.getElementById('originalTotal').value = fmt(sub + vat);
+    calculateFinal();
+}
+
+function calculateFinal() {
+    const orig = parseFloat(document.getElementById('originalTotal').value) || 0;
+    let disc = 0;
+    document.querySelectorAll('#discBody input[type="number"]').forEach(i => {
+        disc += parseFloat(i.value) || 0;
+    });
+    document.getElementById('finalPrice').value = fmt(orig - disc);
+}
+
+function resetForm() {
+    if (!confirm('Clear everything and start a new appraisal?')) return;
+    document.getElementById('itemsBody').innerHTML = '';
+    document.getElementById('discBody').innerHTML = '';
+    document.getElementById('vat').value = '';
+    document.querySelectorAll('input[type="text"]:not([readonly]), textarea').forEach(i => i.value = '');
+    addRow(); addRow(); addRow();
+    addDiscount(); addDiscount();
+    calculateTotals();
+}
+
+// Init
+addRow(); addRow(); addRow();
+addDiscount(); addDiscount();
+calculateTotals();
+</script>
+</body>
+</html>
